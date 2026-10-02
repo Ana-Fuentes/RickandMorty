@@ -1,25 +1,68 @@
 const API_URL = "https://rickandmortyapi.com/api";
 
-export async function getCharacters() {
-  const response = await fetch(`${API_URL}/character`);
-
-  if (!response.ok) {
-    throw new Error("Error al obtener los personajes");
-  }
-
-  const data = await response.json();
-
-  return data.results;
+interface ApiInfo {
+  next: string | null;
+  prev: string | null;
+  pages: number;
+  count: number;
 }
 
-export async function getLocations() {
-  const response = await fetch(`${API_URL}/location`);
+interface CharactersResponse {
+  info: ApiInfo;
+  results: any[];
+}
 
-  if (!response.ok) {
-    throw new Error("Error al obtener las ubicaciones");
+interface LocationsResponse {
+  info: ApiInfo;
+  results: any[];
+}
+
+export async function getCharacters(): Promise<any[]> {
+  const allCharacters: any[] = [];
+
+  let nextUrl: string | null = `${API_URL}/character`;
+
+  while (nextUrl !== null) {
+    const url: string = nextUrl;
+
+    const response: Response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Error al obtener los personajes");
+    }
+
+    const data: CharactersResponse =
+      await response.json();
+
+    allCharacters.push(...data.results);
+
+    nextUrl = data.info.next;
   }
 
-  const data = await response.json();
+  return allCharacters;
+}
 
-  return data.results;
+export async function getLocations(): Promise<any[]> {
+  const allLocations: any[] = [];
+
+  let nextUrl: string | null = `${API_URL}/location`;
+
+  while (nextUrl !== null) {
+    const url: string = nextUrl;
+
+    const response: Response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Error al obtener las ubicaciones");
+    }
+
+    const data: LocationsResponse =
+      await response.json();
+
+    allLocations.push(...data.results);
+
+    nextUrl = data.info.next;
+  }
+
+  return allLocations;
 }

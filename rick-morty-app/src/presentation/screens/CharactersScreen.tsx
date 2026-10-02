@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 
 import { GetCharacters } from '@/application/useCases/GetCharacters';
@@ -14,6 +15,10 @@ import { CharacterRepositoryImpl } from '@/infrastructure/repositories/Character
 export default function CharactersScreen() {
   const [characters, setCharacters] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [screen, setScreen] = useState<
+    'characters' | 'locations'
+  >('characters');
 
   useEffect(() => {
     loadCharacters();
@@ -38,7 +43,9 @@ export default function CharactersScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#B026FF" />
-        <Text style={styles.loading}>Cargando personajes...</Text>
+        <Text style={styles.loading}>
+          Cargando personajes...
+        </Text>
       </View>
     );
   }
@@ -46,41 +53,85 @@ export default function CharactersScreen() {
   return (
     <View style={styles.container}>
 
-      <Text style={styles.sectionTitle}>CHARACTERS</Text>
+      <View style={styles.navigation}>
 
-      <FlatList
-        data={characters}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            screen === 'characters' && styles.activeButton,
+          ]}
+          onPress={() => setScreen('characters')}
+        >
+          <Text style={styles.buttonText}>
+            CHARACTERS
+          </Text>
+        </TouchableOpacity>
 
-            <Image
-              source={{ uri: item.image }}
-              style={styles.image}
-            />
+        <TouchableOpacity
+          style={[
+            styles.button,
+            screen === 'locations' && styles.activeButton,
+          ]}
+          onPress={() => setScreen('locations')}
+        >
+          <Text style={styles.buttonText}>
+            LOCATIONS
+          </Text>
+        </TouchableOpacity>
 
-            <View style={styles.info}>
-              <Text style={styles.name}>
-                {item.name}
-              </Text>
+      </View>
 
-              <Text style={styles.text}>
-                Estado: {item.status}
-              </Text>
+      {screen === 'characters' && (
+        <>
+          <Text style={styles.sectionTitle}>
+            CHARACTERS
+          </Text>
 
-              <Text style={styles.text}>
-                Especie: {item.species}
-              </Text>
+          <FlatList
+            data={characters}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
 
-              <Text style={styles.text}>
-                Género: {item.gender}
-              </Text>
-            </View>
+                <Image
+                  source={{ uri: item.image }}
+                  style={styles.image}
+                />
 
-          </View>
-        )}
-      />
+                <View style={styles.info}>
+
+                  <Text style={styles.name}>
+                    {item.name}
+                  </Text>
+
+                  <Text style={styles.text}>
+                    Estado: {item.status}
+                  </Text>
+
+                  <Text style={styles.text}>
+                    Especie: {item.species}
+                  </Text>
+
+                  <Text style={styles.text}>
+                    Género: {item.gender}
+                  </Text>
+
+                </View>
+
+              </View>
+            )}
+          />
+        </>
+      )}
+
+      {screen === 'locations' && (
+        <View style={styles.center}>
+          <Text style={styles.loading}>
+            LOCATIONS
+          </Text>
+        </View>
+      )}
 
     </View>
   );
@@ -91,6 +142,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
     paddingHorizontal: 15,
+  },
+
+  navigation: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 15,
+  },
+
+  button: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: '#B026FF',
+    borderRadius: 10,
+    padding: 12,
+    alignItems: 'center',
+  },
+
+  activeButton: {
+    backgroundColor: '#1A0A24',
+  },
+
+  buttonText: {
+    color: '#B026FF',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 
   sectionTitle: {
@@ -145,5 +221,6 @@ const styles = StyleSheet.create({
   loading: {
     color: '#B026FF',
     marginTop: 10,
+    fontSize: 16,
   },
 });

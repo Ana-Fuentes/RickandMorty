@@ -110,7 +110,7 @@ export default function HomeScreen() {
   return <CharactersScreen />;
 }*/
 
-import React, { useState } from 'react';
+/*import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 import CharactersScreen from '@/presentation/screens/CharactersScreen';
@@ -227,4 +227,148 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-});
+});*/
+
+
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+
+import LoginScreen from '@/presentation/screens/LoginScreen';
+import CharactersScreen from '@/presentation/screens/CharactersScreen';
+import LocationsScreen from '@/presentation/screens/LocationsScreen';
+
+export default function HomeScreen() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [screen, setScreen] = useState<'characters' | 'locations'>(
+    'characters'
+  );
+
+  // Primero mostramos el Login
+  if (!isLoggedIn) {
+    return (
+      <LoginScreen
+        onLoginSuccess={() => setIsLoggedIn(true)}
+      />
+    );
+  }
+
+  // Después del Login mostramos la aplicación
+  return (
+    <View style={styles.container}>
+
+      <Text style={styles.title}>
+        RICK AND MORTY
+      </Text>
+
+      <View style={styles.buttonContainer}>
+
+        <TouchableOpacity
+          style={[
+            styles.button,
+            screen === 'characters' && styles.buttonActive,
+          ]}
+          onPress={() => setScreen('characters')}
+        >
+          <Text
+            style={[
+              styles.buttonText,
+              screen === 'characters' && styles.buttonTextActive,
+            ]}
+          >
+            CHARACTERS
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.button,
+            screen === 'locations' && styles.buttonActive,
+          ]}
+          onPress={() => setScreen('locations')}
+        >
+          <Text
+            style={[
+              styles.buttonText,
+              screen === 'locations' && styles.buttonTextActive,
+            ]}
+          >
+            LOCATIONS
+          </Text>
+        </TouchableOpacity>
+
+      </View>
+
+      <View style={styles.content}>
+        {screen === 'characters' ? (
+          <CharactersScreen />
+        ) : (
+          <LocationsScreen />
+        )}
+      </View>
+
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000000',
+    paddingTop: 30,
+  },
+
+  title: {
+    color: '#B026FF',
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+
+    textShadowColor: '#B026FF',
+    textShadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    textShadowRadius: 10,
+  },
+
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 15,
+  },
+
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderWidth: 2,
+    borderColor: '#B026FF',
+    borderRadius: 12,
+    backgroundColor: '#0A0A0A',
+  },
+
+  buttonActive: {
+    backgroundColor: '#B026FF',
+  },
+
+  buttonText: {
+    color: '#B026FF',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+
+  buttonTextActive: {
+    color: '#000000',
+  },
+
+  content: {
+    flex: 1,
+  },
+}); 
