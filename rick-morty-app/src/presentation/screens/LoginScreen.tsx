@@ -10,9 +10,7 @@ import {
   ImageBackground,
 } from 'react-native';
 
-import { signInWithEmailAndPassword } from 'firebase/auth';
-
-import { auth } from '@/infrastructure/firebase/firebaseConfig';
+import { useSession } from '@/presentation/context/SessionContext';
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
@@ -21,6 +19,9 @@ interface LoginScreenProps {
 export default function LoginScreen({
   onLoginSuccess,
 }: LoginScreenProps) {
+
+  const { login, error } = useSession();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -42,20 +43,14 @@ export default function LoginScreen({
     console.log('🔐 Intentando iniciar sesión...');
     console.log('📧 Correo:', email);
 
-    try {
+    // Autenticación mediante el Provider
+    const success = await login(email, password);
 
-      // Autenticación con Firebase
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+    if (success) {
 
-      // MENSAJE EN CONSOLA
       console.log('✅ INICIO DE SESIÓN CORRECTO');
       console.log('👤 Usuario autenticado:', email);
 
-      // MENSAJE EN LA INTERFAZ
       Alert.alert(
         'Autenticación exitosa',
         `Bienvenido a Rick and Morty.\n\nUsuario: ${email}`,
@@ -67,17 +62,15 @@ export default function LoginScreen({
         ]
       );
 
-    } catch (error) {
+    } else {
 
-      // MENSAJE DE ERROR EN CONSOLA
       console.error('❌ ERROR DE AUTENTICACIÓN');
       console.error('Usuario:', email);
       console.error('Error:', error);
 
-      // MENSAJE DE ERROR EN LA INTERFAZ
       Alert.alert(
         'Autenticación no válida',
-        'El correo o la contraseña son incorrectos.'
+        error ?? 'El correo o la contraseña son incorrectos.'
       );
     }
   };
